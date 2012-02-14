@@ -7,7 +7,7 @@ void DrawStatic()
     textAlign(CENTER);
     text("NU Scope v1.0", width/2, 20);
     textAlign(LEFT);
-
+    
     //Draw running indicatior
     stroke(255);
     fill(255);
@@ -16,4 +16,21 @@ void DrawStatic()
     stroke(0);
     fill(0);
     arc(20, 20, 15, 15, 0, 2 * PI);
+
+}
+
+void DrawStaticScope()
+{
+}
+
+void DrawStaticSelectingPorts()
+{
+    stroke(255);
+    fill(255);
+    text("Select Port", 35, 70);
+    fill(0, 0);
+}
+
+void DrawStaticInitializing()
+{
 }

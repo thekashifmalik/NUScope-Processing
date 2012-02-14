@@ -23,6 +23,7 @@ String[] FileO;
 float RunningIndicator;
 boolean ChangedState;
 boolean JustStarted;
+boolean Debug = true;
 
 
 //SETUP MAIN
@@ -37,11 +38,8 @@ void setup()
     ScopeStateMachine = new StateMachine();
     ScopeStateMachine.AddState("Initializing");
     ScopeStateMachine.AddState("SelectingPorts");
-    ScopeStateMachine.AddState("Running");
+    ScopeStateMachine.AddState("Scope");
     ChangedState = ScopeStateMachine.SetState("Initializing");
-
-    UI = new ControlP5(this);
-    RunningIndicator = 0;
 }
 
 
@@ -49,11 +47,11 @@ void setup()
 void draw()
 {
     DrawStatic();
-    if (ScopeStateMachine.GetState().equals("Running"))
+    if (ScopeStateMachine.GetState().equals("Scope"))
     {
         if (ChangedState)
         {
-            enterStateRunning();
+            enterStateScope();
         }
     }
     else if (ScopeStateMachine.GetState().equals("SelectingPorts"))
@@ -62,9 +60,7 @@ void draw()
         {
             enterStateSelectingPorts();
         }
-        fill(255);
-        text("Select Port", 35, 70);
-        fill(0, 0);
+        DrawStaticSelectingPorts();
     }
     else if (ScopeStateMachine.GetState().equals("Initializing"))
     {
@@ -87,16 +83,18 @@ void selectPort(String portName)
 
 void controlEvent(ControlEvent theEvent)
 {
+
     if (theEvent.isController())
     {
-        if (theEvent.controller().value() == 10)
-        {
-            selectPort(theEvent.controller().name());
-        }
         if (theEvent.controller().name().equals("Select Ports"))
         {
-            leaveStateRunning();
+            leaveStateScope();
             ChangedState = ScopeStateMachine.SetState("SelectingPorts");
+        }
+
+        else if (theEvent.controller().value() == 10)
+        {   
+            selectPort(theEvent.controller().name());
         }
     }
 }
@@ -113,19 +111,19 @@ void serialEvent(Serial thisPort)
 {
     // read the serial buffer as a string until a newline appears
     //String myString = thisPort.readString();
-    
+
     // if you got any bytes other than the newline
     //if (myString != null)
     //{
-        //myString = trim(myString); // ditch the newline
-        //println(myString);
+    //myString = trim(myString); // ditch the newline
+    //println(myString);
     //}
 }
 
 //stop
 public void Exit()
 {
-    if (ScopeStateMachine.GetState().equals("Running"))
+    if (ScopeStateMachine.GetState().equals("Scope"))
     {
         SerialPort.clear();
         SerialPort.stop();

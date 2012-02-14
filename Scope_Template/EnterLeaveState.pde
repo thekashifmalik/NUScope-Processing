@@ -1,9 +1,11 @@
 void enterStateInitializing()
 {
+    ChangedState = false;
+    UI = new ControlP5(this);
+    RunningIndicator = 0;
     FileI = createReader("NUScopeConfig.txt");
     FileO = new String[2];
     UI.addButton("Exit", 1, (width - 90), 10, 80, 20);
-    ChangedState = false;
 }
 
 void leaveStateInitializing()
@@ -51,34 +53,42 @@ void enterStateSelectingPorts()
             }
         }
     }
-    
+    JustStarted = false;
     for (int sIndex = 0; sIndex < Serial.list().length; sIndex++)
     {
-        println(Serial.list()[sIndex]);
+        if (Debug)
+        {
+            println("Detected Com: " + Serial.list()[sIndex]);
+        }
         UI.addButton(Serial.list()[sIndex], 10, 60, 90 + 30*sIndex, 80, 20);
     }
 }
 
 void leaveStateSelectingPorts()
 {
-    println(Serial.list().length);
-    for (int seriali = 0; seriali < Serial.list().length; seriali++)
+    if(!JustStarted)
     {
-        println(Serial.list()[seriali]);
-        UI.remove(Serial.list()[seriali]);
+        for (int seriali = 0; seriali < Serial.list().length; seriali++)
+        { 
+            UI.remove((Serial.list()[seriali]));
+            if (Debug)
+            {
+                println("Removed UI: " + Serial.list()[seriali]);
+            }
+        }
     }
     saveStrings("NUScopeConfig.txt", FileO);
     JustStarted = false;
-    ChangedState = ScopeStateMachine.SetState("Running");
+    ChangedState = ScopeStateMachine.SetState("Scope");
 }
 
-void enterStateRunning()
+void enterStateScope()
 {
-    UI.addButton("Select Ports", 1, (width - 180), 10, 80, 20);
     ChangedState = false;
+    UI.addButton("Select Ports", 1, (width - 180), 10, 80, 20);
 }
 
-void leaveStateRunning()
+void leaveStateScope()
 {
     SerialPort.clear();
     SerialPort.stop();

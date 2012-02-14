@@ -2,6 +2,7 @@ class StateMachine
 //Allows creation and usage of simple state machines.
 {
     //GLOBAL VARIABLES
+    private boolean Debug = true;
     private ArrayList States;
     private String CurrentState;
     
@@ -17,6 +18,10 @@ class StateMachine
         if (!States.contains(StateName))
         {
             States.add(StateName);
+            if (Debug)
+            {
+                println("Added state: " + StateName);
+            }
         }
     }
     
@@ -24,6 +29,10 @@ class StateMachine
     //Removes a state if it exists.
     {
         States.remove(StateName);
+        if (Debug)
+            {
+                println("Removed state: " + StateName);
+            }
     }
     
     boolean SetState(String StateName)
@@ -32,6 +41,10 @@ class StateMachine
         if (States.contains(StateName))
         {
             CurrentState = StateName;
+            if (Debug)
+            {
+                println("Changed state: " + StateName);
+            }
             return true;
         }
         return false;
