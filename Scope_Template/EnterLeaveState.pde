@@ -58,7 +58,7 @@ void enterStateSelectingPorts()
     {
         if (Debug)
         {
-            println("Detected Com: " + Serial.list()[sIndex]);
+            println("Detected Port: " + Serial.list()[sIndex]);
         }
         UI.addButton(Serial.list()[sIndex], 10, 60, 90 + 30*sIndex, 80, 20);
     }

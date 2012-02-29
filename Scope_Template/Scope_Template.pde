@@ -76,6 +76,10 @@ void draw()
 void selectPort(String portName)
 {
     SerialPort = new Serial(this, portName, 115200);
+    if (Debug)
+    {
+         println("Selected Port: " + portName);
+    }
     FileO[0] = "NU Scope Configuration File";
     FileO[1] = portName;
     leaveStateSelectingPorts();

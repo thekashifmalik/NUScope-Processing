@@ -2,7 +2,6 @@ class StateMachine
 //Allows creation and usage of simple state machines.
 {
     //GLOBAL VARIABLES
-    private boolean Debug = true;
     private ArrayList States;
     private String CurrentState;
     
