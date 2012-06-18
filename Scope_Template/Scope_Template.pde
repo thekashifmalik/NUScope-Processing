@@ -8,8 +8,8 @@ import processing.serial.*;
 
 //GLOBAL VARIABLES
 //Setup
-int WindowWidth = 640;
-int WindowHeight = 360;
+int WindowWidth = 1024;
+int WindowHeight = 576;
 int WindowFrameRate = 30;
 
 //Plugin controllers
