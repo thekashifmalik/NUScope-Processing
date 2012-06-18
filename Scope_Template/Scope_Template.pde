@@ -49,6 +49,7 @@ void draw()
     DrawStatic();
     if (ScopeStateMachine.GetState().equals("Scope"))
     {
+        DrawStaticScope();
         if (ChangedState)
         {
             enterStateScope();

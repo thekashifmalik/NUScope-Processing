@@ -86,6 +86,7 @@ void enterStateScope()
 {
     ChangedState = false;
     UI.addButton("Select Ports", 1, (width - 180), 10, 80, 20);
+    CreateRunningButtons();
 }
 
 void leaveStateScope()
@@ -93,5 +94,6 @@ void leaveStateScope()
     SerialPort.clear();
     SerialPort.stop();
     UI.remove("Select Ports");
+    RemoveRunningButtons();
 }
 
