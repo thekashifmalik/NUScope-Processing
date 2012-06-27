@@ -22,16 +22,35 @@ class StateMachine
                 println("Added state: " + StateName);
             }
         }
+        else
+        {
+            if (Debug)
+            {
+                println("State " + StateName + " already exists!");
+            }
+        }
     }
     
     void RemoveState(String StateName)
     //Removes a state if it exists.
     {
-        States.remove(StateName);
-        if (Debug)
+        int stateIndex = States.indexOf(StateName);
+        
+        if (stateIndex != -1)
+        {
+            States.remove(stateIndex);
+            if (Debug)
             {
                 println("Removed state: " + StateName);
             }
+        }
+        else
+        {
+            if (Debug)
+            {
+                println("State " + StateName + "does not exist!");
+            }
+        }
     }
     
     boolean SetState(String StateName)
