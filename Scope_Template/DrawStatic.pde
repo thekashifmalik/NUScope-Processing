@@ -36,11 +36,11 @@ void CreateRunningButtons()
     s = UI.addRadioButton("ScopeMode", WindowWidth - 320, 140);
     s.setItemsPerRow(10);
     s.setNoneSelectedAllowed(false);
-    s.setSpacingColumn(30);
-    s.addItem("FZE", 1);
-    s.addItem("CON", 2);
-    s.addItem("SWP", 3);
-    s.activate("CON");
+    s.setSpacingColumn(40);
+    s.addItem("Cont.", 1);
+    s.addItem("Freeze", 2);
+    s.addItem("Sweep", 3);
+    s.activate("Cont.");
     
     // Function generator
     RadioButton r;
@@ -55,7 +55,6 @@ void CreateRunningButtons()
     r.addItem("REC", 5);
     r.activate("OFF");
     UI.addSlider("Function Freq", 0, 100000, 50000, WindowWidth - 320, 220, 240, 20);
-    UI.addSlider("Function Duty", 0, 100, 50, WindowWidth - 320, 250, 240, 20);
     
     // Square Wave generator
     UI.addToggle("SQR ON", WindowWidth - 320, 320, 20, 20);
@@ -82,7 +81,6 @@ void RemoveRunningButtons()
     
     UI.remove("Function");
     UI.remove("Function Freq");
-    UI.remove("Function Duty");
     
     UI.remove("SQR ON");
     UI.remove("SQR Freq");
