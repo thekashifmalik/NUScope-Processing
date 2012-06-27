@@ -18,12 +18,14 @@ ControlP5 UI;
 StateMachine ScopeStateMachine;
 BufferedReader FileI;
 String[] FileO;
+SimpleThread DataThread;
 
 //Other variables
 float RunningIndicator;
 boolean ChangedState;
 boolean JustStarted;
 boolean Debug = true;
+int GlobalCounter;
 
 
 //SETUP MAIN
@@ -46,6 +48,7 @@ void setup()
 //DRAW MAIN
 void draw()
 {
+    GlobalCounter++;
     DrawStatic();
     if (ScopeStateMachine.GetState().equals("Scope"))
     {
@@ -73,7 +76,11 @@ void draw()
         ChangedState = ScopeStateMachine.SetState("SelectingPorts");
     }
 }
-
+void sendData()
+{
+    SerialPort.write("s 18600 620 1 1 1 0 1 0 0 0 0 1 1 500 1 500 50 1\n");
+    println("trans");
+}
 void selectPort(String portName)
 {
     SerialPort = new Serial(this, portName, 115200);
@@ -115,14 +122,15 @@ void keyPressed()
 void serialEvent(Serial thisPort)
 {
     // read the serial buffer as a string until a newline appears
-    //String myString = thisPort.readString();
+    String myString = thisPort.readString();
 
     // if you got any bytes other than the newline
-    //if (myString != null)
-    //{
-    //myString = trim(myString); // ditch the newline
-    //println(myString);
-    //}
+    if (myString != null)
+    {
+        myString = trim(myString); // ditch the newline
+        //println(myString);
+        println("rec: " + myString.length());
+    }
 }
 
 //stop

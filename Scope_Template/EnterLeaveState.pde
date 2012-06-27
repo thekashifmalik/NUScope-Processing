@@ -87,10 +87,15 @@ void enterStateScope()
     ChangedState = false;
     UI.addButton("Select Ports", 1, (width - 180), 10, 80, 20);
     CreateRunningButtons();
+    
+    int frequency = 30;
+    DataThread = new SimpleThread(this, "dataThread", 1000/frequency, 0, "sendData");
+    DataThread.start();
 }
 
 void leaveStateScope()
 {
+    DataThread.quit();
     SerialPort.clear();
     SerialPort.stop();
     UI.remove("Select Ports");
