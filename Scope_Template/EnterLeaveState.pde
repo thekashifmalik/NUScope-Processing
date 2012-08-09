@@ -1,17 +1,3 @@
-void enterStateInitializing()
-{
-    ChangedState = false;
-    UI = new ControlP5(this);
-    RunningIndicator = 0;
-    FileI = createReader("NUScopeConfig.txt");
-    FileO = new String[2];
-    UI.addButton("Exit", 1, (width - 90), 10, 80, 20);
-}
-
-void leaveStateInitializing()
-{
-    JustStarted = true;
-}
 
 void enterStateSelectingPorts()
 {

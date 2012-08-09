@@ -5,13 +5,13 @@ class StateMachine
     private ArrayList States;
     private String CurrentState;
     
-    StateMachine()
+    public StateMachine()
     {
         States = new ArrayList();
         CurrentState = null;
     }
     
-    void AddState(String StateName)
+    public void AddState(String StateName)
     //Adds a state if it does not already exist.
     {
         if (!States.contains(StateName))
@@ -31,7 +31,7 @@ class StateMachine
         }
     }
     
-    void RemoveState(String StateName)
+     public void RemoveState(String StateName)
     //Removes a state if it exists.
     {
         int stateIndex = States.indexOf(StateName);
@@ -53,7 +53,7 @@ class StateMachine
         }
     }
     
-    boolean SetState(String StateName)
+    public boolean SetState(String StateName)
     //Sets what the current state is, if it exists.
     {
         if (States.contains(StateName))
@@ -68,7 +68,7 @@ class StateMachine
         return false;
     }
     
-    String GetState()
+    public String GetState()
     //Returns what the current state is.
     {
         return CurrentState;

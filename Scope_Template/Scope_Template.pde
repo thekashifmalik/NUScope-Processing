@@ -1,6 +1,6 @@
 //NU Scope 2
 //Kalail
-//11/29/2011
+//6/29/2012
 
 //LIBRARIES
 import controlP5.*;
@@ -19,6 +19,8 @@ StateMachine ScopeStateMachine;
 BufferedReader FileI;
 String[] FileO;
 SimpleThread DataThread;
+
+//UI Colors
 
 //Other variables
 float RunningIndicator;
@@ -42,13 +44,23 @@ void setup()
     ScopeStateMachine.AddState("SelectingPorts");
     ScopeStateMachine.AddState("Scope");
     ChangedState = ScopeStateMachine.SetState("Initializing");
+    
+    ChangedState = false;
+    UI = new ControlP5(this);
+    RunningIndicator = 0;
+    FileI = createReader("NUScopeConfig.txt");
+    FileO = new String[2];
+    UI.addButton("Exit", 1, (width - 90), 10, 80, 20);
+    
+    JustStarted = true;
+    
+    ChangedState = ScopeStateMachine.SetState("SelectingPorts");
 }
 
 
 //DRAW MAIN
 void draw()
 {
-    GlobalCounter++;
     DrawStatic();
     if (ScopeStateMachine.GetState().equals("Scope"))
     {
@@ -66,16 +78,9 @@ void draw()
         }
         DrawStaticSelectingPorts();
     }
-    else if (ScopeStateMachine.GetState().equals("Initializing"))
-    {
-        if (ChangedState)
-        {
-            enterStateInitializing();
-        }
-        leaveStateInitializing();
-        ChangedState = ScopeStateMachine.SetState("SelectingPorts");
-    }
 }
+
+
 void sendData()
 {
     SerialPort.write("s 18600 620 1 1 1 0 1 0 0 0 0 1 1 500 1 500 50 1\n");
@@ -141,6 +146,7 @@ public void Exit()
         SerialPort.clear();
         SerialPort.stop();
     }
+    DataThread.quit();
     exit();
 }
 
