@@ -1,83 +1,139 @@
-class StateMachine
+void changeState(String newState)
 {
-	// Simple state machine class.
-
-	// Class variables
-	private ArrayList States;
-	private String CurrentState;
-	
-	public StateMachine()
+	if (currentState.equals("Scope"))
 	{
-		// Constructor
-
-		States = new ArrayList();
-		CurrentState = null;
+		leaveStateScope();
 	}
-	
-	public void addState(String StateName)
+	else if (currentState.equals("Ports"))
 	{
-		// Add a state, if it does not already exist.
-
-		if (!States.contains(StateName))
-		{
-			States.add(StateName);
-			if (Debug)
-			{
-				println("Added state: " + StateName);
-			}
-		}
-		else
-		{
-			if (Debug)
-			{
-				println("State " + StateName + " already exists!");
-			}
-		}
+		leaveStatePorts();
 	}
-	
-	 public void removeState(String StateName)
+	else if (currentState.equals("Initialize"))
 	{
-		// Remove a state, if it exists.
+	}
 
-		int stateIndex = States.indexOf(StateName);
-		
-		if (stateIndex != -1)
+	if (newState.equals("Scope"))
+	{
+		enterStateScope();
+	}
+	else if (newState.equals("Ports"))
+	{
+		enterStatePorts();
+	}
+	else if (newState.equals("Exit"))
+	{
+		exit();
+	}
+	currentState = newState;
+}
+
+
+void enterStatePorts()
+{
+	for (int sIndex = 0; sIndex < Serial.list().length; sIndex++)
+	{
+		if (debug)
 		{
-			States.remove(stateIndex);
-			if (Debug)
-			{
-				println("Removed state: " + StateName);
-			}
+			println("Detected Port: " + Serial.list()[sIndex]);
 		}
-		else
+		uInterface.addButton(Serial.list()[sIndex], 10, 60, 90 + 30*sIndex, 80, 20);
+	}
+}
+
+void leaveStatePorts()
+{
+
+	for (int seriali = 0; seriali < Serial.list().length; seriali++)
+	{ 
+		uInterface.remove((Serial.list()[seriali]));
+		if (debug)
 		{
-			if (Debug)
-			{
-				println("State " + StateName + "does not exist!");
-			}
+			println("Removed uInterface: " + Serial.list()[seriali]);
 		}
 	}
-	
-	public boolean setState(String StateName)
-	{
-		// Set the current state, if it exists.
+}
 
-		if (States.contains(StateName))
-		{
-			CurrentState = StateName;
-			if (Debug)
-			{
-				println("Changed state: " + StateName);
-			}
-			return true;
-		}
-		return false;
-	}
-	
-	public String getState()
-	{
-		// Get the current state.
+void enterStateScope()
+{
+	// dataThread = new SimpleThread(this, "data", 1000/dataThreadFreq, 0, "dataThreadMain");
+	uInterface.addButton("Select Ports", 1, (width - 180), 10, 80, 20);
+	createScopeButtons();
+}
 
-		return CurrentState;
-	}
+void leaveStateScope()
+{
+	serialPort.clear();
+	serialPort.stop();
+	uInterface.remove("Select Ports");
+	removeScopeButtons();
+}
+
+void createScopeButtons()
+{
+    // On/off buttons
+    uInterface.addToggle("A1 On", 20, 80, 20, 20);
+    uInterface.addToggle("A2 On", 20, 240, 20, 20);
+    uInterface.addToggle("D1 On", 20, 400, 20, 20);
+    uInterface.addToggle("D2 On", 20, 440, 20, 20);
+    uInterface.addToggle("D3 On", 20, 480, 20, 20);
+    uInterface.addToggle("D4 On", 20, 520, 20, 20);
+    
+    // Scope
+    uInterface.addSlider("Sample Rate", 0, 100000, 50000, windowWidth - 320, 100, 240, 20);
+    RadioButton s;
+    s = uInterface.addRadioButton("ScopeMode", windowWidth - 320, 140);
+    s.setItemsPerRow(10);
+    s.setNoneSelectedAllowed(false);
+    s.setSpacingColumn(40);
+    s.addItem("Cont.", 1);
+    s.addItem("Freeze", 2);
+    s.addItem("Sweep", 3);
+    s.activate("Cont.");
+    
+    // Function generator
+    RadioButton r;
+    r = uInterface.addRadioButton("Function", windowWidth - 320, 200);
+    r.setItemsPerRow(10);
+    r.setNoneSelectedAllowed(false);
+    r.setSpacingColumn(30);
+    r.addItem("OFF", 1);
+    r.addItem("SIN", 2);
+    r.addItem("COS", 3);
+    r.addItem("TAN", 4);
+    r.addItem("REC", 5);
+    r.activate("OFF");
+    uInterface.addSlider("Function Freq", 0, 100000, 50000, windowWidth - 320, 220, 240, 20);
+    
+    // Square Wave generator
+    uInterface.addToggle("SQR ON", windowWidth - 320, 320, 20, 20);
+    uInterface.addSlider("SQR Freq", 0, 100000, 50000, windowWidth - 320, 360, 240, 20);
+    uInterface.addSlider("SQR Duty", 0, 100, 50, windowWidth - 320, 390, 240, 20);
+    
+    // Current
+    uInterface.addToggle("PWR On", windowWidth - 320, 470, 20, 20);
+    uInterface.addSlider("Current", 0, 100, 0, windowWidth - 320, 510, 240, 20);
+}
+
+void removeScopeButtons()
+{
+    uInterface.remove("Start");
+    uInterface.remove("A1 On");
+    uInterface.remove("A2 On");
+    uInterface.remove("D1 On");
+    uInterface.remove("D2 On");
+    uInterface.remove("D3 On");
+    uInterface.remove("D4 On");
+    
+    uInterface.remove("Sample Rate");
+    uInterface.remove("ScopeMode");
+    
+    uInterface.remove("Function");
+    uInterface.remove("Function Freq");
+    
+    uInterface.remove("SQR ON");
+    uInterface.remove("SQR Freq");
+    uInterface.remove("SQR Duty");
+    
+    uInterface.remove("PWR On");
+    uInterface.remove("Current");
 }

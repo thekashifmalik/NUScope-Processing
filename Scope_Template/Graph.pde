@@ -1,7 +1,7 @@
-class Graph
+class Scope
 {
-    // Global variables
-    private int GraphWidth;
-    private int GraphHeight;
-    private int[] data;
+	// Global variables
+	private int scopeWidth;
+	private int scopeHeight;
+	private int[] data;
 }

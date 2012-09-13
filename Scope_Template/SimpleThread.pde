@@ -27,7 +27,7 @@ class SimpleThread extends Thread
 		}
 		catch (NoSuchMethodException e)
 		{
-			if (Debug)
+			if (debug)
 			{
 				println("Method not found!");
 			}
@@ -49,7 +49,7 @@ class SimpleThread extends Thread
 
 		Count = 0;
 		IsRunning = true;
-		if (Debug)
+		if (debug)
 		{
 			println("Started thread, ID: " + ID + ", Freq: " + 1000/WaitInterval + "Hz, Method: " + RunMethod);
 		}

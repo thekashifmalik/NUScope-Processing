@@ -7,147 +7,65 @@ import controlP5.*;
 import processing.serial.*;
 
 // Globals
-// Setup
+boolean debug = true;
+
 int windowWidth = 1024;
 int windowHeight = 576;
 int windowFrameRate = 30;
-int masterFrequency = 120;
 
-// Plugin controllers
 Serial serialPort;
 ControlP5 uInterface;
-StateMachine scopeStateMachine;
-BufferedReader fileI;
-String[] fileO;
-SimpleThread dataThread;
-SimpleThread masterThread;
 
-// uInterface Colors
-color_background = 0
-color_Back
+int colorBackground = 0;
+int colorMain;
 
-// Other variables
-float RunningIndicator;
-boolean ChangedState;
-boolean JustStarted;
-boolean Debug = true;
-int GlobalCounter;
+float runningIndicator = 0;
+String currentState = "Initialize";
 
 
-// SETUP MAIN
+// Initialization
 void setup()
 {
 	//Window properties
 	size(windowWidth, windowHeight);
 	frameRate(windowFrameRate);
-	background(color_background);
+	background(colorBackground);
 	smooth();
 
-	//Initialize state machine
-	scopeStateMachine = new StateMachine();
-	scopeStateMachine.addState("Ports");
-	scopeStateMachine.addState("Scope");
-	scopeStateMachine.addState("Update");
-	
-	changedState = false;
 	uInterface = new ControlP5(this);
-	RunningIndicator = 0;
-	
-	// Get config file
-	fileI = createReader("NUScopeConfig.txt");
-	fileO = new String[2];
 	uInterface.addButton("Exit", 1, (width - 90), 10, 80, 20);
-	
-	JustStarted = true;
-	
-	ChangedState = scopeStateMachine.SetState("Ports");
-	
-	MasterThread = new SimpleThread(this, "Master", 1000/MasterFrequency, 0, "master");
-	MasterThread.start();
+
+	changeState("Ports");
 }
 
-boolean getConfig()
-{
-	if (fileI != null)
-	{
-		String lineIn;
-		try
-		{
-			lineIn = FileI.readLine();
-		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			lineIn = null;
-		}
-		if (lineIn.equals("NU Scope Configuration File"))
-		{
-			try
-			{
-				lineIn = FileI.readLine();
-			} 
-			catch (IOException e)
-			{
-				e.printStackTrace();
-				lineIn = null;
-			}
-			
-			for (int sIndex2 = 0; sIndex2 < Serial.list().length; sIndex2++)
-			{
-				if (Serial.list()[sIndex2].equals(lineIn))
-				{
-					selectPort(lineIn);
-					return true;
-				}
-			}
-		}
-	}
-	return false
-}
-void master()
-{
-}
-
-//DRAW MAIN
+// Draw loop
 void draw()
 {
-	DrawStatic();
-	currentState = scopeStateMachine.GetState();
+	drawStatic();
 	if (currentState.equals("Scope"))
 	{
-		DrawStaticScope();
-		if (ChangedState)
-		{
-			enterStateScope();
-		}
+		drawStaticScope();
 	}
 	else if (currentState.equals("Ports"))
 	{
-		if (ChangedState)
-		{
-			enterStatePorts();
-		}
-		DrawStaticPorts();
+		drawStaticPorts();
 	}
 }
 
-
 //void sendData()
 //{
-//    SerialPort.write("s 18600 620 1 1 1 0 1 0 0 0 0 1 1 500 1 500 50 1\n");
+//    serialPort.write("s 18600 620 1 1 1 0 1 0 0 0 0 1 1 500 1 500 50 1\n");
 //    println("trans");
 //}
 
 void selectPort(String portName)
 {
-	SerialPort = new Serial(this, portName, 115200);
-	if (Debug)
+	serialPort = new Serial(this, portName, 115200);
+	if (debug)
 	{
 		 println("Selected Port: " + portName);
 	}
-	FileO[0] = "NU Scope Configuration File";
-	FileO[1] = portName;
-	leaveStatePorts();
+	changeState("Scope");
 }
 
 void controlEvent(ControlEvent theEvent)
@@ -155,10 +73,15 @@ void controlEvent(ControlEvent theEvent)
 
 	if (theEvent.isController())
 	{
-		if (theEvent.controller().name().equals("Select Ports"))
+		if (theEvent.controller().name().equals("Exit"))
 		{
-			leaveStateScope();
-			ChangedState = scopeStateMachine.SetState("Ports");
+			exit();
+			changeState("Exit");
+		}
+
+		else if (theEvent.controller().name().equals("Select Ports"))
+		{
+			changeState("Ports");
 		}
 
 		else if (theEvent.controller().value() == 10)
@@ -189,16 +112,3 @@ void serialEvent(Serial thisPort)
 		println("rec: " + myString.length());
 	}
 }
-
-//stop
-public void Exit()
-{
-	if (scopeStateMachine.GetState().equals("Scope"))
-	{
-		SerialPort.clear();
-		SerialPort.stop();
-	}
-	MasterThread.quit();
-	exit();
-}
-
