@@ -7,32 +7,25 @@ import controlP5.*;
 import processing.serial.*;
 
 // Globals
-// Setup
-int windowWidth = 1024;
-int windowHeight = 576;
-int windowFrameRate = 30;
-int masterFrequency = 120;
+int windowWidth;
+int windowHeight;
+int windowFrameRate;
 
-// Plugin controllers
 Serial serialPort;
 ControlP5 uInterface;
 StateMachine scopeStateMachine;
 BufferedReader fileI;
 String[] fileO;
 SimpleThread dataThread;
-SimpleThread masterThread;
 
-// uInterface Colors
-color_background = 0
-color_Back
+int color_background = 0
+int color_main;
 
-// Other variables
-float RunningIndicator;
-boolean ChangedState;
-boolean JustStarted;
-boolean Debug = true;
-int GlobalCounter;
+float runningIndicator;
+boolean changedState;
+int globalCounter;
 
+boolean debug = true;
 
 // SETUP MAIN
 void setup()

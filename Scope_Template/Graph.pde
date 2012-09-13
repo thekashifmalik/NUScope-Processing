@@ -1,5 +1,7 @@
 class Graph
 {
     // Global variables
-    int[] data;
+    private int GraphWidth;
+    private int GraphHeight;
+    private int[] data;
 }
