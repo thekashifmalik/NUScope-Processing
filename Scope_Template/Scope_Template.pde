@@ -7,33 +7,43 @@ import controlP5.*;
 import processing.serial.*;
 
 // Globals
-boolean debug = true;
+boolean debug = false;
 
 int windowWidth = 1024;
 int windowHeight = 576;
 int windowFrameRate = 30;
+int scopeThreadFrequency = 240;
+int serialThreadFrequency = 120;
 
 Serial serialPort;
 ControlP5 uInterface;
+SimpleThread scopeThread;
+SimpleThread serialThread;
 
 int colorBackground = 0;
 int colorMain;
 
 float runningIndicator = 0;
 String currentState = "Initialize";
+boolean newSerialData = false;
 
 
 // Initialization
 void setup()
 {
-	//Window properties
+	// Window properties
 	size(windowWidth, windowHeight);
 	frameRate(windowFrameRate);
 	background(colorBackground);
 	smooth();
 
+	// UI
 	uInterface = new ControlP5(this);
 	uInterface.addButton("Exit", 1, (width - 90), 10, 80, 20);
+
+	// Serial Thread
+	serialThread = new SimpleThread(this, "serialThread", 1000/serialThreadFrequency, 0, "serialThreadMain");
+	serialThread.start();
 
 	changeState("Ports");
 }
@@ -49,6 +59,26 @@ void draw()
 	else if (currentState.equals("Ports"))
 	{
 		drawStaticPorts();
+	}
+}
+
+void scopeThreadMain()
+{	
+}
+
+void serialThreadMain()
+{
+	if (newSerialData)
+	{
+		newSerialData = false;
+
+		String recString = serialPort.readString();
+		recString = trim(recString);
+
+		if (recString != null)
+		{
+			println("rec: " + recString);
+		}
 	}
 }
 
@@ -101,14 +131,5 @@ void keyPressed()
 //Serial Event
 void serialEvent(Serial thisPort)
 {
-	// read the serial buffer as a string until a newline appears
-	String myString = thisPort.readString();
-
-	// if you got any bytes other than the newline
-	if (myString != null)
-	{
-		myString = trim(myString); // ditch the newline
-		//println(myString);
-		println("rec: " + myString.length());
-	}
+	newSerialData = true;
 }

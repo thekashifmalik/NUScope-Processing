@@ -22,6 +22,7 @@ void changeState(String newState)
 	}
 	else if (newState.equals("Exit"))
 	{
+        serialThread.quit();
 		exit();
 	}
 	currentState = newState;
@@ -55,9 +56,10 @@ void leaveStatePorts()
 
 void enterStateScope()
 {
-	// dataThread = new SimpleThread(this, "data", 1000/dataThreadFreq, 0, "dataThreadMain");
-	uInterface.addButton("Select Ports", 1, (width - 180), 10, 80, 20);
-	createScopeButtons();
+	scopeThread = new SimpleThread(this, "scopeThread", 1000/scopeThreadFrequency, 0, "scopeThreadMain");
+    scopeThread.start();
+    uInterface.addButton("Select Ports", 1, (width - 180), 10, 80, 20);
+    createScopeButtons();
 }
 
 void leaveStateScope()
@@ -66,6 +68,7 @@ void leaveStateScope()
 	serialPort.stop();
 	uInterface.remove("Select Ports");
 	removeScopeButtons();
+    scopeThread.quit();
 }
 
 void createScopeButtons()
