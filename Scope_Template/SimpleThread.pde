@@ -88,6 +88,11 @@ class SimpleThread extends Thread
 		}
 	}
 
+	void changeInterval(int interval)
+	{
+		WaitInterval = interval;
+	}
+
 	void quit()
 	{
 		// Exit the thread gracefully.
@@ -97,4 +102,3 @@ class SimpleThread extends Thread
 		interrupt();
 	}
 }
-

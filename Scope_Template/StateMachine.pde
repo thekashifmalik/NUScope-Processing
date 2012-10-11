@@ -4,10 +4,6 @@ void changeState(String newState)
 	{
 		leaveStateScope();
 	}
-	else if (currentState.equals("Ports"))
-	{
-		leaveStatePorts();
-	}
 	else if (currentState.equals("Initialize"))
 	{
 	}
@@ -16,58 +12,43 @@ void changeState(String newState)
 	{
 		enterStateScope();
 	}
-	else if (newState.equals("Ports"))
-	{
-		enterStatePorts();
-	}
+
 	else if (newState.equals("Exit"))
 	{
-        serialThread.quit();
 		exit();
 	}
 	currentState = newState;
 }
 
 
-void enterStatePorts()
+void openPicConnection()
 {
-	for (int sIndex = 0; sIndex < Serial.list().length; sIndex++)
-	{
-		if (debug)
-		{
-			println("Detected Port: " + Serial.list()[sIndex]);
-		}
-		uInterface.addButton(Serial.list()[sIndex], 10, 60, 90 + 30*sIndex, 80, 20);
-	}
-}
-
-void leaveStatePorts()
-{
-
-	for (int seriali = 0; seriali < Serial.list().length; seriali++)
-	{ 
-		uInterface.remove((Serial.list()[seriali]));
-		if (debug)
-		{
-			println("Removed uInterface: " + Serial.list()[seriali]);
-		}
-	}
+   openPic(0);
+   if (!picConnected)
+   {
+     openPicConnection();
+   }
 }
 
 void enterStateScope()
 {
-	scopeThread = new SimpleThread(this, "scopeThread", 1000/scopeThreadFrequency, 0, "scopeThreadMain");
+    openPicConnection();
+    // start data thread
+    dataThread = new SimpleThread(this, "dataThread", 1000/dataThreadFrequency, 0, "dataThreadMain");
+    dataThread.start();
+    // start scope thread
+    scopeThread = new SimpleThread(this, "scopeThread", 0, 0, "scopeThreadMain");
     scopeThread.start();
-    uInterface.addButton("Select Ports", 1, (width - 180), 10, 80, 20);
     createScopeButtons();
 }
 
 void leaveStateScope()
 {
-	serialPort.clear();
-	serialPort.stop();
-	uInterface.remove("Select Ports");
-	removeScopeButtons();
+    serialPort.clear();
+    serialPort.stop();
+    uInterface.remove("Select Ports");
+    removeScopeButtons();
+    dataThread.quit();
     scopeThread.quit();
 }
 

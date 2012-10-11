@@ -12,25 +12,29 @@ boolean debug = false;
 int windowWidth = 1024;
 int windowHeight = 576;
 int windowFrameRate = 30;
-int scopeThreadFrequency = 240;
-int serialThreadFrequency = 120;
 
-Serial serialPort;
 ControlP5 uInterface;
 SimpleThread scopeThread;
-SimpleThread serialThread;
+SimpleThread dataThread;
+Scope scope;
 
 int colorBackground = 0;
 int colorMain;
 
 float runningIndicator = 0;
 String currentState = "Initialize";
-boolean newSerialData = false;
 
+boolean picConnected = false;
+boolean rawDataReady = false;
+boolean askforDataReady = false;
+boolean constructingPacket = false;
+boolean readyToAsk = false;
+
+byte[] packetRaw = new byte[64];
 
 // Initialization
 void setup()
-{
+{	
 	// Window properties
 	size(windowWidth, windowHeight);
 	frameRate(windowFrameRate);
@@ -41,11 +45,7 @@ void setup()
 	uInterface = new ControlP5(this);
 	uInterface.addButton("Exit", 1, (width - 90), 10, 80, 20);
 
-	// Serial Thread
-	serialThread = new SimpleThread(this, "serialThread", 1000/serialThreadFrequency, 0, "serialThreadMain");
-	serialThread.start();
-
-	changeState("Ports");
+	changeState("Scope");
 }
 
 // Draw loop
@@ -55,47 +55,26 @@ void draw()
 	if (currentState.equals("Scope"))
 	{
 		drawStaticScope();
-	}
-	else if (currentState.equals("Ports"))
-	{
-		drawStaticPorts();
+		drawScope();
 	}
 }
 
 void scopeThreadMain()
-{	
-}
-
-void serialThreadMain()
 {
-	if (newSerialData)
+
+	// if ready - Parse data
+	if (rawDataReady)
 	{
-		newSerialData = false;
-
-		String recString = serialPort.readString();
-		recString = trim(recString);
-
-		if (recString != null)
-		{
-			println("rec: " + recString);
-		}
+		rawDataReady = false;
+		parseData();
 	}
 }
 
-//void sendData()
-//{
-//    serialPort.write("s 18600 620 1 1 1 0 1 0 0 0 0 1 1 500 1 500 50 1\n");
-//    println("trans");
-//}
 
-void selectPort(String portName)
+
+void parseData()
 {
-	serialPort = new Serial(this, portName, 115200);
-	if (debug)
-	{
-		 println("Selected Port: " + portName);
-	}
-	changeState("Scope");
+	// Parse packetRaw.
 }
 
 void controlEvent(ControlEvent theEvent)
@@ -108,28 +87,5 @@ void controlEvent(ControlEvent theEvent)
 			exit();
 			changeState("Exit");
 		}
-
-		else if (theEvent.controller().name().equals("Select Ports"))
-		{
-			changeState("Ports");
-		}
-
-		else if (theEvent.controller().value() == 10)
-		{   
-			selectPort(theEvent.controller().name());
-		}
 	}
-}
-
-
-//KeyPress
-void keyPressed()
-{
-}
-
-
-//Serial Event
-void serialEvent(Serial thisPort)
-{
-	newSerialData = true;
 }
